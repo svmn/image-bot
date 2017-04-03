@@ -7,7 +7,7 @@ const token = process.env.TELEGRAM_TOKEN;
 // See https://developers.openshift.com/en/node-js-environment-variables.html
 const options = {
   webHook: {
-    port: process.env.OPENSHIFT_NODEJS_PORT | 3000,
+    port: process.env.OPENSHIFT_NODEJS_PORT || 3000,
     host: process.env.OPENSHIFT_NODEJS_IP || 'localhost',
     // you do NOT need to set up certificates since OpenShift provides
     // the SSL certs already (https://<app-name>.rhcloud.com)
@@ -21,7 +21,9 @@ const bot = new TelegramBot(token, options);
 
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided
-bot.setWebHook(`${url}/bot${token}`);
+const webhookUrl = `${url}/bot${token}`;
+bot.setWebHook(webhookUrl)
+  .then(() => console.log('Image bot started on ' + webhookUrl));
 
 bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
   const query = raw[1].trim();
@@ -29,14 +31,11 @@ bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
   if (!query) return;
 
   searchImage(query)
-    .then(imageUrl => {
-      bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
-        .catch(console.error);
-    })
+    .then(imageUrl => bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id }))
     .catch(err => {
       console.error(err);
 
-      bot.sendMessage(message.chat.id, JSON.stringify(err), { reply_to_message_id: message.message_id })
+      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
         .catch(console.error);
     });
 });

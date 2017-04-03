@@ -11,7 +11,7 @@ function search(query) {
 return client.search(query, { safe: 'off' })
 	.then(results => {
 		if (!cursor.has(query)) {
-			cursor.set(key);
+			cursor.set(query);
 		} else {
 		  cursor.increment(query);
 		}
