@@ -6,7 +6,7 @@ const cursor = new Cursor(10);
 
 function searchVideo(query) {
   const opts = {
-    key: process.env.API_TOKEN,
+    key: process.env.API_KEY,
     type: 'video',
     safeSearch: 'none',
     maxResults: 10,
