@@ -2,6 +2,7 @@
 
 const TelegramBot = require('node-telegram-bot-api');
 const searchImage = require('./image');
+const searchVideo = require('./video');
 
 const token = process.env.TELEGRAM_TOKEN;
 // See https://developers.openshift.com/en/node-js-environment-variables.html
@@ -32,6 +33,21 @@ bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
 
   searchImage(query)
     .then(imageUrl => bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id }))
+    .catch(err => {
+      console.error(err);
+
+      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
+        .catch(console.error);
+    });
+});
+
+bot.onText(/^(?:видео|video) (.+)/i, (message, raw) => {
+  const query = raw[1].trim();
+
+  if (!query) return;
+
+  searchVideo(query)
+    .then(videoUrl => bot.sendMessage(message.chat.id, videoUrl, { reply_to_message_id: message.message_id }))
     .catch(err => {
       console.error(err);
 
