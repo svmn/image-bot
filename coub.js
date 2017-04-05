@@ -5,7 +5,7 @@ const Cursor = require('./cursor');
 const cursor  = new Cursor(10);
 
 function search(query) {
-  return fetch('https://coub.com/api/v2/search/coubs?q=' + query)
+  return fetch('https://coub.com/api/v2/search/coubs?q=' + encodeURIComponent(query))
     .then(response => response.json())
     .then(results => {
       if (!cursor.has(query)) {
