@@ -10,7 +10,11 @@
   "author": "svmn",
   "license": "MIT",
   "dependencies": {
+    "async": "^2.3.0",
+    "bluebird": "^3.5.0",
     "google-images": "^2.1.0",
+    "jimp": "^0.2.27",
+    "lodash": "^4.17.4",
     "node-fetch": "^1.6.3",
     "node-telegram-bot-api": "^0.27.0",
     "youtube-search": "^1.0.9"
