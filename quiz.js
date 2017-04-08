@@ -10,7 +10,7 @@ const Jimp = require('jimp');
 const ICON_HEIGHT = 33;
 const ICON_WIDTH = 59;
 
-const STEAM_API_KEY = process.env.STEAM_API_TOKEN;
+const STEAM_API_KEY = process.env.STEAM_API_KEY;
 
 class DotaQuiz {
   constructor() {
