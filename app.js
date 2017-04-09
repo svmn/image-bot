@@ -5,6 +5,7 @@ const searchImage = require('./image');
 const searchVideo = require('./video');
 const searchCoub = require('./coub');
 const quiz = require('./quiz');
+const QuizManager = require('./quizManager');
 
 quiz.loadHeroIcons();
 
@@ -76,9 +77,20 @@ bot.onText(/^(?:куб|coub) (.+)/i, (message, raw) => {
 });
 
 bot.onText(/^quiz$/i, message => {
+  bot.sendChatAction(message.chat.id, 'typing');
+
   quiz.get()
     .then(({ match, image }) => {
-      bot.sendPhoto(message.chat.id, image, { reply_to_message_id: message.message_id });
+      return bot.sendPhoto(message.chat.id, image, {
+        reply_to_message_id: message.message_id,
+        reply_markup: {
+          inline_keyboard: [[
+            { text: 'Radiant', callback_data: 'radiant' },
+            { text: 'Dire', callback_data: 'dire' },
+          ]]
+        }
+      })
+        .then(message => quiz.save(message, match));
     })
     .catch(err => {
       console.error(err);
@@ -86,4 +98,18 @@ bot.onText(/^quiz$/i, message => {
       bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
         .catch(console.error);
     });
+});
+
+const manager = new QuizManager(bot);
+
+bot.onText(/^\/register(@ohime_bot)?$/i, message => {
+  manager.register(message);
+});
+
+bot.onText(/^\/start(@ohime_bot)?$/i, message => {
+  manager.start(message);
+});
+
+bot.on('callback_query', callback => {
+  manager.answer(callback);
 });
