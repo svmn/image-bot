@@ -4,10 +4,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const searchImage = require('./image');
 const searchVideo = require('./video');
 const searchCoub = require('./coub');
-const quiz = require('./quiz');
-const QuizManager = require('./quizManager');
-
-quiz.loadHeroIcons();
 
 const token = process.env.TELEGRAM_TOKEN;
 // See https://developers.openshift.com/en/node-js-environment-variables.html
@@ -100,16 +96,4 @@ bot.onText(/^quiz$/i, message => {
     });
 });
 
-const manager = new QuizManager(bot);
-
-bot.onText(/^\/register(@ohime_bot)?$/i, message => {
-  manager.register(message);
-});
-
-bot.onText(/^\/start(@ohime_bot)?$/i, message => {
-  manager.start(message);
-});
-
-bot.on('callback_query', callback => {
-  manager.answer(callback);
-});
+require('./dota-quiz')(bot);

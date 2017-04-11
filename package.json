@@ -13,7 +13,6 @@
     "async": "^2.3.0",
     "bluebird": "^3.5.0",
     "google-images": "^2.1.0",
-    "ioredis": "^2.5.0",
     "jimp": "^0.2.27",
     "lodash": "^4.17.4",
     "node-fetch": "^1.6.3",

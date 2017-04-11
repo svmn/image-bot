@@ -5,29 +5,15 @@ const random = require('lodash/random');
 const doUntil = require('async/doUntil');
 const bluebird = require('bluebird');
 const Jimp = require('jimp');
-const Redis = require('ioredis');
 
 const ICON_HEIGHT = 33;
 const ICON_WIDTH = 59;
 
-const { 
-  STEAM_API_KEY,
-  OPENSHIFT_REDIS_HOST,
-  OPENSHIFT_REDIS_PORT,
-  REDIS_PASSWORD,
-} = process.env;
+const STEAM_API_KEY = process.env.STEAM_API_KEY; 
 
 class DotaQuiz {
   constructor() {
     this.heroIcons = {};
-
-    this.redis = new Redis({
-      host: OPENSHIFT_REDIS_HOST,
-      port: OPENSHIFT_REDIS_PORT,
-      password: REDIS_PASSWORD
-    });
-    this.redis.on('ready', () => console.log('Connected to redis'));
-    this.redis.on('error', console.error);
   }
 
   _findMatch([from, to], cb) {
@@ -135,25 +121,6 @@ class DotaQuiz {
     return this.getRange()
       .then(range => this.findMatch(range))
       .then(match => this.buildImage(match));
-  }
-
-  save(message, match) {
-    const key = `DOTA_QUIZ:${message.message_id}`;
-    const data = {
-      matchId: match.match_id,
-      winner: match.radiant_win ? 'radiant' : 'dire'
-    };
-
-    return this.redis.hmset(key, data);
-  }
-
-  check(callback) {
-    const key = `DOTA_QUIZ:${callback.message.message_id}`;
-    return this.redis.hgetall(key)
-      .then(data => {
-        const result = callback.data === data.winner ? 'correct' : 'incorrect';
-        return `@${callback.from.username} ${result}. Winner is ${data.winner}\nhttps://www.dotabuff.com/matches/${data.matchId}`;
-      });
   }
 }
 

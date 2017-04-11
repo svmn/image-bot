@@ -2,7 +2,7 @@
 
 const Game = require('./game');
 
-class QuizManager {
+class GameManager {
   constructor(bot) {
     this.bot = bot;
     this.games = new Map();
@@ -36,7 +36,7 @@ class QuizManager {
     const game = this.games.get(gameId);
 
     if (!game) {
-      return this.bot.answerCallbackQuery(gameId, 'Game finished');
+      return this.bot.answerCallbackQuery(callback.id, 'Game finished');
     }
 
     game.answer(callback);
@@ -47,4 +47,4 @@ class QuizManager {
   }
 }
 
-module.exports = QuizManager;
+module.exports = GameManager;
