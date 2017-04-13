@@ -79,33 +79,32 @@ class Game {
 
     setTimeout(() => {
       for (let i = 0; i < ROUND_AMOUNT; i++) {
-        setTimeout(() => {
-          quiz.get()
-            .then(({ match, image }) => {
-              return this.bot.sendPhoto(this.chatId, image, {
-                reply_markup: {
-                  inline_keyboard: [[
-                    { text: 'Radiant', callback_data: 'radiant' },
-                    { text: 'Dire', callback_data: 'dire' },
-                  ]]
-                }
-              })
-                .then(message => {
-                  this.questions[message.message_id] = {
-                    matchId: match.match_id,
-                    answer: match.radiant_win ? 'radiant' : 'dire'
-                  };
-
-                  this.currentQuestion = message.message_id;
-                });
-            })
-            .catch(console.error);
-        }, i * ROUND_DURATION * 1000);
+        setTimeout(() => this.sendQuestion(), i * ROUND_DURATION * 1000);
       }
 
       setTimeout(() => this.finish(), ROUND_AMOUNT * ROUND_DURATION * 1000);
     }, 5000);
 
+  }
+
+  sendQuestion() {
+    quiz.get()
+      .then(question => {
+        return this.bot.sendPhoto(this.chatId, question.question, {
+          reply_markup: {
+            inline_keyboard: [question.options.map(option => ({ text: option, callback_data: option }))]
+          }
+        })
+          .then(message => {
+            this.questions[message.message_id] = {
+              link: question.link,
+              answer: question.answer
+            };
+
+            this.currentQuestion = message.message_id;
+          });
+      })
+      .catch(console.error);
   }
 
   finish() {
@@ -118,7 +117,7 @@ class Game {
     const scoreboard = _.sortBy(this.players, 'score').reverse();
     const winner = scoreboard[0].first_name;
     const scoreboardText = scoreboard.map((player, index) => `${index+1}. ${player.first_name} ${player.score}`);
-    const matches = _.values(this.questions).map((question, index) => `${index+1}. https://www.dotabuff.com/matches/${question.matchId}`);
+    const info = _.values(this.questions).map((question, index) => `${index+1}. ${question.link}`);
 
 
 
@@ -126,7 +125,7 @@ class Game {
       + '\nScoreboard\n'
       + scoreboardText.join('\n')
       + '\nMatches:\n'
-      + matches.join('\n');
+      + info.join('\n');
 
     this.bot.sendMessage(this.chatId, text);
 

@@ -98,7 +98,7 @@ class DotaQuiz {
               return new Promise((resolve, reject) => {
                 image.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
                   if (err) return reject(err);
-                  resolve({ match, image: buffer });
+                  resolve(buffer);
                 });
               });
             });
@@ -118,9 +118,19 @@ class DotaQuiz {
   }
 
   get() {
+    let matchInfo = null;
     return this.getRange()
       .then(range => this.findMatch(range))
-      .then(match => this.buildImage(match));
+      .then(match => (matchInfo = match))
+      .then(match => this.buildImage(match))
+      .then(image => {
+        return {
+          question: image,
+          options: ['Radiant', 'Dire'],
+          answer: matchInfo.radiant_win ? 'Radiant' : 'Dire',
+          link: `https://www.dotabuff.com/matches/${matchInfo.match_id}`
+        };
+      });
   }
 }
 
