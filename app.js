@@ -33,7 +33,11 @@ bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
   if (!query) return;
 
   searchImage(query)
-    .then(imageUrl => bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id }))
+    .then(imageUrl => {
+      return imageUrl 
+        ? bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
+        : notFound(message);
+    })
     .catch(err => {
       console.error(err);
 
@@ -48,13 +52,12 @@ bot.onText(/^(?:видео|video) (.+)/i, (message, raw) => {
   if (!query) return;
 
   searchVideo(query)
-    .then(videoUrl => bot.sendMessage(message.chat.id, videoUrl, { reply_to_message_id: message.message_id }))
-    .catch(err => {
-      console.error(err);
-
-      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
-        .catch(console.error);
-    });
+    .then(videoUrl => {
+      return videoUrl
+        ? bot.sendMessage(message.chat.id, videoUrl, { reply_to_message_id: message.message_id })
+        : notFound(message);
+    })
+    .catch(err => onError(err, message));    
 });
 
 bot.onText(/^(?:куб|coub) (.+)/i, (message, raw) => {
@@ -63,13 +66,12 @@ bot.onText(/^(?:куб|coub) (.+)/i, (message, raw) => {
   if (!query) return;
 
   searchCoub(query)
-    .then(url => bot.sendMessage(message.chat.id, url, { reply_to_message_id: message.message_id }))
-    .catch(err => {
-      console.error(err);
-
-      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
-        .catch(console.error);
-    });
+    .then(url => {
+      return url
+        ? bot.sendMessage(message.chat.id, url, { reply_to_message_id: message.message_id })
+        : notFound(message);
+    })
+    .catch(err => onError(err, message));    
 });
 
 bot.onText(/^quiz$/i, message => {
@@ -88,12 +90,18 @@ bot.onText(/^quiz$/i, message => {
       })
         .then(message => quiz.save(message, match));
     })
-    .catch(err => {
-      console.error(err);
-
-      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
-        .catch(console.error);
-    });
+    .catch(err => onError(err, message));
 });
+
+function onError(err, message) {
+  console.error(err);
+
+  bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
+    .catch(console.error);
+}
+
+function notFound(message) {
+  bot.sendMessage(message.chat.id, 'Не нашел :pensive:', { reply_to_message_id: message.message_id });
+}
 
 require('./dota-quiz')(bot);

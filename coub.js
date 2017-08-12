@@ -15,7 +15,7 @@ function search(query) {
       }
 
       const item = results.coubs[cursor.get(query)];
-      return `https://coub.com/view/${item.permalink}`;
+      return item ? `https://coub.com/view/${item.permalink}` : null;
     })
 }
 

@@ -16,7 +16,9 @@ return client.search(query, { safe: 'off' })
 		  cursor.increment(query);
 		}
 
-		return results[cursor.get(query)] ? results[cursor.get(query)].url : null;
+		const item = results[cursor.get(query)];
+
+		return item ? item.url : null;
 	});
 }
 

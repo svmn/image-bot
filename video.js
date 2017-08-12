@@ -23,7 +23,9 @@ function searchVideo(query) {
         cursor.increment(query);
       }
 
-      resolve(results[cursor.get(query)].link);
+      const item = results[cursor.get(query)];
+
+      resolve(item ? item.link : null);
     });
   });
 }
