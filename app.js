@@ -101,7 +101,7 @@ function onError(err, message) {
 }
 
 function notFound(message) {
-  bot.sendMessage(message.chat.id, 'Не нашел :pensive:', { reply_to_message_id: message.message_id });
+  bot.sendMessage(message.chat.id, 'Не нашел \u{1F614}', { reply_to_message_id: message.message_id });
 }
 
 require('./dota-quiz')(bot);
