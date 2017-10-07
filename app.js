@@ -5,20 +5,23 @@ const searchImage = require('./image');
 const searchVideo = require('./video');
 const searchCoub = require('./coub');
 
-const token = process.env.TELEGRAM_TOKEN;
-// See https://developers.openshift.com/en/node-js-environment-variables.html
+const TOKEN = process.env.TELEGRAM_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
 const options = {
   webHook: {
-    port: process.env.OPENSHIFT_NODEJS_PORT || 3000,
-    host: process.env.OPENSHIFT_NODEJS_IP || 'localhost',
-    // you do NOT need to set up certificates since OpenShift provides
-    // the SSL certs already (https://<app-name>.rhcloud.com)
-  },
+    // Port to which you should bind is assigned to $PORT variable
+    // See: https://devcenter.heroku.com/articles/dynos#local-environment-variables
+    port: process.env.PORT
+    // you do NOT need to set up certificates since Heroku provides
+    // the SSL certs already (https://<app-name>.herokuapp.com)
+    // Also no need to pass IP because on Heroku you need to bind to 0.0.0.0
+  }
 };
-// OpenShift routes from port :443 to OPENSHIFT_NODEJS_PORT
-const domain = process.env.OPENSHIFT_APP_DNS;
-const url = `${domain}:443`;
-const bot = new TelegramBot(token, options);
+// Heroku routes from port :443 to $PORT
+// Add URL of your app to env variable or enable Dyno Metadata
+// to get this automatically
+// See: https://devcenter.heroku.com/articles/dyno-metadata
+const url = process.env.APP_URL || 'https://<app-name>.herokuapp.com:443';
+const bot = new TelegramBot(TOKEN, options);
 
 
 // This informs the Telegram servers of the new webhook.
@@ -26,7 +29,6 @@ const bot = new TelegramBot(token, options);
 const webhookUrl = `${url}/bot${token}`;
 bot.setWebHook(webhookUrl)
   .then(() => console.log('Image bot started on ' + webhookUrl));
-
 bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
   const query = raw[1].trim();
 
