@@ -20,13 +20,12 @@ const options = {
 // Add URL of your app to env variable or enable Dyno Metadata
 // to get this automatically
 // See: https://devcenter.heroku.com/articles/dyno-metadata
-const url = process.env.APP_URL || 'https://<app-name>.herokuapp.com:443';
 const bot = new TelegramBot(TOKEN, options);
 
 
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided
-const webhookUrl = `${url}/bot${TOKEN}`;
+const webhookUrl = `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/bot${TOKEN}`;
 bot.setWebHook(webhookUrl)
   .then(() => console.log('Image bot started on ' + webhookUrl));
 bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
