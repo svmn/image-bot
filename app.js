@@ -26,7 +26,7 @@ const bot = new TelegramBot(TOKEN, options);
 
 // This informs the Telegram servers of the new webhook.
 // Note: we do not need to pass in the cert, as it already provided
-const webhookUrl = `${url}/bot${token}`;
+const webhookUrl = `${url}/bot${TOKEN}`;
 bot.setWebHook(webhookUrl)
   .then(() => console.log('Image bot started on ' + webhookUrl));
 bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
