@@ -2,6 +2,7 @@
 
 const TelegramBot = require('node-telegram-bot-api');
 const searchImage = require('./image');
+const searchGif = require('./gif');
 const searchVideo = require('./video');
 const searchCoub = require('./coub');
 
@@ -28,12 +29,32 @@ const bot = new TelegramBot(TOKEN, options);
 const webhookUrl = `https://${process.env.HEROKU_APP_NAME}.herokuapp.com/bot${TOKEN}`;
 bot.setWebHook(webhookUrl)
   .then(() => console.log('Image bot started on ' + webhookUrl));
+
 bot.onText(/^(?:пикча|image) (.+)/i, (message, raw) => {
   const query = raw[1].trim();
 
   if (!query) return;
 
   searchImage(query)
+    .then(imageUrl => {
+      return imageUrl 
+        ? bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
+        : notFound(message);
+    })
+    .catch(err => {
+      console.error(err);
+
+      bot.sendMessage(message.chat.id, err.message, { reply_to_message_id: message.message_id })
+        .catch(console.error);
+    });
+});
+
+bot.onText(/^(?:гифка|gif) (.+)/i, (message, raw) => {
+  const query = raw[1].trim();
+
+  if (!query) return;
+
+  searchGif(query)
     .then(imageUrl => {
       return imageUrl 
         ? bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
@@ -73,25 +94,6 @@ bot.onText(/^(?:куб|coub) (.+)/i, (message, raw) => {
         : notFound(message);
     })
     .catch(err => onError(err, message));    
-});
-
-bot.onText(/^quiz$/i, message => {
-  bot.sendChatAction(message.chat.id, 'typing');
-
-  quiz.get()
-    .then(({ match, image }) => {
-      return bot.sendPhoto(message.chat.id, image, {
-        reply_to_message_id: message.message_id,
-        reply_markup: {
-          inline_keyboard: [[
-            { text: 'Radiant', callback_data: 'radiant' },
-            { text: 'Dire', callback_data: 'dire' },
-          ]]
-        }
-      })
-        .then(message => quiz.save(message, match));
-    })
-    .catch(err => onError(err, message));
 });
 
 function onError(err, message) {

@@ -12,6 +12,7 @@
   "dependencies": {
     "async": "^2.3.0",
     "bluebird": "^3.5.0",
+    "giphy-api": "^1.2.7",
     "google-images": "^2.1.0",
     "jimp": "^0.2.27",
     "lodash": "^4.17.4",
