@@ -57,7 +57,7 @@ bot.onText(/^(?:гифка|gif) (.+)/i, (message, raw) => {
   searchGif(query)
     .then(imageUrl => {
       return imageUrl 
-        ? bot.sendPhoto(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
+        ? bot.sendDocument(message.chat.id, imageUrl, { reply_to_message_id: message.message_id })
         : notFound(message);
     })
     .catch(err => {
