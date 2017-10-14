@@ -16,7 +16,7 @@ function search(query) {
 
 		const item = results.data[cursor.get(query)];
 
-		return item ? item.images.original.url : null;
+		return item ? item.images.original.webp : null;
 	  });
 }
 
